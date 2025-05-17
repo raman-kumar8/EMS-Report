@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 
 import java.time.LocalTime;
 import java.util.List;
+import java.util.UUID;
 
 @Data
 @AllArgsConstructor
@@ -13,8 +14,8 @@ import java.util.List;
 public class ReportMetaResponseDto {
     private String reportId;
     private String reportName;
-    private String summary;
+
     private LocalTime generatedTime;
     private String s3Url;
-    private List<String> taskIncluded; // ← Add this field
+    private List<String> taskIncludedNames;
 }

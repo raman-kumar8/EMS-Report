@@ -4,7 +4,9 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.Data;
 import org.hibernate.annotations.GenericGenerator;
+import org.hibernate.annotations.JdbcTypeCode;
 
+import java.util.List;
 import java.util.UUID;
 @Entity
 @Data
@@ -19,7 +21,7 @@ public class ReportTaskModel {
     @JoinColumn(name = "report_id")
     @JsonBackReference
     private Report report;
-
-    @Column(columnDefinition = "jsonb")  // Use 'json' if not using PostgreSQL
-    private String includedTaskUuids;    // Should be stored as a JSON array string
+    @Column
+    @ElementCollection
+    private List<String> includedTaskNames;
 }
