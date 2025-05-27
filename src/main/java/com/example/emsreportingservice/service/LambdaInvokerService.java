@@ -14,19 +14,17 @@ import software.amazon.awssdk.services.lambda.model.InvokeResponse;
 
 import java.nio.charset.StandardCharsets;
 import java.util.List;
-
 @Service
 @RequiredArgsConstructor
 public class LambdaInvokerService {
 
     private final ObjectMapper objectMapper = new ObjectMapper();
 
-    public String invokeLambda(List<TaskModelDto> tasks) {
-        try (LambdaClient lambdaClient = LambdaClient.builder()
-                .region(Region.AP_SOUTH_1) // change if different
-                .credentialsProvider(EnvironmentVariableCredentialsProvider.create())
-                .build()) {
+    private final LambdaClient lambdaClient;
 
+    // Use the injected LambdaClient (no try-with-resources here because client managed by Spring or manually closed)
+    public String invokeLambda(List<TaskModelDto> tasks) {
+        try {
             String payload = objectMapper.writeValueAsString(tasks);
 
             InvokeRequest request = InvokeRequest.builder()
@@ -36,8 +34,7 @@ public class LambdaInvokerService {
 
             InvokeResponse response = lambdaClient.invoke(request);
 
-            String responsePayload = response.payload().asUtf8String();
-            return responsePayload;
+            return response.payload().asUtf8String();
 
         } catch (Exception e) {
             e.printStackTrace();

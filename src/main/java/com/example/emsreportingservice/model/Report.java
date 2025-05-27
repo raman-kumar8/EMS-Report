@@ -1,5 +1,6 @@
 package com.example.emsreportingservice.model;
 
+import com.example.emsreportingservice.enums.Status;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.Data;
@@ -17,9 +18,8 @@ import java.util.UUID;
 public class Report {
 
     @Id
-    @GeneratedValue(generator = "UUID")
-    @GenericGenerator(name = "UUID", strategy = "org.hibernate.id.UUIDGenerator")
     private UUID reportId;
+
 
     @Column(nullable = false)
     private UUID userId;
@@ -35,7 +35,7 @@ public class Report {
 
     @Column
     private String s3Url;
-
+    private Status status;
     @CreationTimestamp
     @Temporal(TemporalType.TIMESTAMP)
     private Date created_at;

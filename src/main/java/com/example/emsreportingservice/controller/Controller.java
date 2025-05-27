@@ -2,6 +2,7 @@ package com.example.emsreportingservice.controller;
 
 import com.example.emsreportingservice.dto.ReportGenerateRequestDto;
 import com.example.emsreportingservice.dto.ReportMetaResponseDto;
+import com.example.emsreportingservice.enums.Status;
 import com.example.emsreportingservice.model.Report;
 import com.example.emsreportingservice.service.KafkaProducerService;
 import com.example.emsreportingservice.service.ReportService;
@@ -28,12 +29,33 @@ public class Controller {
 
     @PostMapping("/generate")
     @ResponseStatus(HttpStatus.ACCEPTED)
-    public ResponseEntity<String> generateReport(@Valid @RequestBody ReportGenerateRequestDto reportGenerateRequestDto) {
-        kafkaProducerService.sendReportRequest(reportGenerateRequestDto);
-        return ResponseEntity
-                .status(HttpStatus.ACCEPTED)
-                .body("Report generation request received.");
+    public ResponseEntity<ReportMetaResponseDto> generateReport(@Valid @RequestBody ReportGenerateRequestDto reportGenerateRequestDto) {
+        // Generate a new UUID for the report
+        UUID newReportId = UUID.randomUUID();
+
+        // Create a new DTO with the generated reportId (copy other fields)
+        ReportGenerateRequestDto dtoWithId = new ReportGenerateRequestDto();
+        dtoWithId.setReportId(newReportId);
+        dtoWithId.setReportName(reportGenerateRequestDto.getReportName());
+        dtoWithId.setUserId(reportGenerateRequestDto.getUserId());
+        dtoWithId.setTaskIds(reportGenerateRequestDto.getTaskIds());
+        dtoWithId.setCreationDate(reportGenerateRequestDto.getCreationDate());
+
+        // Save the report first with PROCESSING status
+        reportService.saveReport(dtoWithId);
+
+        // Send Kafka message with the newly created reportId
+        kafkaProducerService.sendReportRequest(dtoWithId);
+
+        // Prepare response for frontend
+        ReportMetaResponseDto responseDto = new ReportMetaResponseDto();
+        responseDto.setReportId(newReportId);
+        responseDto.setReportName(dtoWithId.getReportName());
+        responseDto.setStatus(Status.PROCESSING);
+
+        return ResponseEntity.ok(responseDto);
     }
+
     @GetMapping("/{reportId}")
     @ResponseStatus(HttpStatus.OK)
     public ResponseEntity<ReportMetaResponseDto> getReportMetaById(@PathVariable String reportId) {

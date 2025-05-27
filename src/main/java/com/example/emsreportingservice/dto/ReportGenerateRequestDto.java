@@ -3,6 +3,7 @@ package com.example.emsreportingservice.dto;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
+import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 @Data
@@ -13,5 +14,8 @@ public class ReportGenerateRequestDto {
     private String reportName;
     @NotNull(message = "Please select the user id")
     private UUID userId;
+    @NotNull
+    private Date creationDate;
 
+    private UUID reportId;
 }
