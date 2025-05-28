@@ -77,19 +77,21 @@ public class ReportService {
             report.setReportName(requestDto.getReportName());
             report.setUserId(requestDto.getUserId());
             report.setGeneratedTime(LocalTime.now());
-            report.setS3Url("https://s3.amazonaws.com/your-bucket-name/your-file-name.csv");
-            String summary = String.format(
-                    "Report '%s'  at %s with %d tasks: %s",
-                    report.getReportName(),
+            String  invok = lambdaInvokerService.invokeLambda(taskList);
+            System.out.println(invok);
+             report.setS3Url(invok);
+//            String summary = String.format(
+//                    "Report '%s'  at %s with %d tasks: %s",
+//                    report.getReportName(),
+//
+//                    report.getGeneratedTime().toString(),
+//                    taskList.size(),
+//                    taskList.stream()
+//                            .map(TaskModelDto::getTaskName)
+//                            .collect(Collectors.joining(", "))
+//            );
 
-                    report.getGeneratedTime().toString(),
-                    taskList.size(),
-                    taskList.stream()
-                            .map(TaskModelDto::getTaskName)
-                            .collect(Collectors.joining(", "))
-            );
-
-            report.setSummary(summary);
+            report.setSummary("Will gnereate latter");
 // or call your lambda invoker here
 
             report.setStatus(Status.COMPLETED);

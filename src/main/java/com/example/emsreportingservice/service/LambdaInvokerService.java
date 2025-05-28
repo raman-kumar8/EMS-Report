@@ -18,7 +18,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class LambdaInvokerService {
 
-    private final ObjectMapper objectMapper = new ObjectMapper();
+    private final ObjectMapper objectMapper;
 
     private final LambdaClient lambdaClient;
 
@@ -28,7 +28,7 @@ public class LambdaInvokerService {
             String payload = objectMapper.writeValueAsString(tasks);
 
             InvokeRequest request = InvokeRequest.builder()
-                    .functionName("your-lambda-function-name") // ⛔ REPLACE with actual function name
+                    .functionName("pdfgenerator") // ⛔ REPLACE with actual function name
                     .payload(SdkBytes.fromUtf8String(payload))
                     .build();
 
