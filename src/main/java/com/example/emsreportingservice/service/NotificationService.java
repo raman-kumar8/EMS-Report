@@ -14,6 +14,6 @@ public class NotificationService {
     }
 
     public void sendNotification(ReportMetaResponseDto reportMeta) {
-        messagingTemplate.convertAndSend("/topic/reports", reportMeta);
+        messagingTemplate.convertAndSend("/topic}", reportMeta);
     }
 }

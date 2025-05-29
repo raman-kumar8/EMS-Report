@@ -45,6 +45,7 @@ dependencies {
     implementation 'software.amazon.awssdk:lambda:2.20.49'
     implementation 'org.springframework.boot:spring-boot-starter-websocket'
     implementation 'com.vladmihalcea:hibernate-types-52:2.9.13'
+    implementation 'com.pusher:pusher-http-java:1.0.0'
 
 
 

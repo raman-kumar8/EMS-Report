@@ -11,6 +11,7 @@ import com.example.emsreportingservice.model.ReportTaskModel;
 import com.example.emsreportingservice.repository.ReportRepository;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.pusher.rest.Pusher;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,7 +44,8 @@ public class ReportService {
     private ReportTaskService reportTaskService;
     @Autowired
     private NotificationService notificationService;
-
+    @Autowired
+    private  Pusher pusher;
     @Autowired
     GetAllTask getAllTask;
 
@@ -60,6 +62,8 @@ public class ReportService {
     }
 
     @Transactional
+    // In your ReportService.java or wherever generateReportAsync resides
+
     public void generateReportAsync(ReportGenerateRequestDto requestDto) {
         // Fetch existing report entity from DB
         Report report = reportRepository.findById(requestDto.getReportId())
@@ -70,6 +74,15 @@ public class ReportService {
         RequestListUUidsDto requestListUUidsDto = new RequestListUUidsDto(taskIds);
         ResponseEntity<List<TaskModelDto>> response = getAllTask.getAllById(requestListUUidsDto);
 
+        String userIdForChannel = String.valueOf(report.getUserId());
+
+        // --- IMPORTANT CHANGE HERE: Remove "private-" prefix for public channels ---
+        String channelName = "user-" + userIdForChannel; // Changed from "private-user-"
+        // --- End IMPORTANT CHANGE ---
+
+        // Define the event name your frontend will listen for
+        String eventName = "report-status-update";
+
         if (response.getStatusCode().is2xxSuccessful() && response.getBody() != null) {
             List<TaskModelDto> taskList = response.getBody();
 
@@ -77,23 +90,10 @@ public class ReportService {
             report.setReportName(requestDto.getReportName());
             report.setUserId(requestDto.getUserId());
             report.setGeneratedTime(LocalTime.now());
-            String  invok = lambdaInvokerService.invokeLambda(taskList);
-            System.out.println(invok);
-             report.setS3Url(invok);
-//            String summary = String.format(
-//                    "Report '%s'  at %s with %d tasks: %s",
-//                    report.getReportName(),
-//
-//                    report.getGeneratedTime().toString(),
-//                    taskList.size(),
-//                    taskList.stream()
-//                            .map(TaskModelDto::getTaskName)
-//                            .collect(Collectors.joining(", "))
-//            );
+            String invok = lambdaInvokerService.invokeLambda(taskList);
 
-            report.setSummary("Will gnereate latter");
-// or call your lambda invoker here
-
+            report.setS3Url(invok);
+            report.setSummary("Will generate later");
             report.setStatus(Status.COMPLETED);
 
             // Update task info
@@ -116,7 +116,8 @@ public class ReportService {
             notificationDto.setS3Url(report.getS3Url());
             notificationDto.setStatus(report.getStatus());
 
-            notificationService.sendNotification(notificationDto);
+            pusher.trigger(channelName, eventName,String.valueOf(report.getReportId()));
+            System.out.println("Pusher: Sent 'COMPLETED' update to public channel: " + channelName); // Add logging
 
         } else {
             // Handle failed fetch of tasks, update report status and notify
@@ -127,7 +128,8 @@ public class ReportService {
             notificationDto.setReportName(report.getReportName());
             notificationDto.setStatus(report.getStatus());
 
-            notificationService.sendNotification(notificationDto);
+            pusher.trigger(channelName, eventName,String.valueOf(report.getReportId()));
+            System.out.println("Pusher: Sent 'FAILED' update to public channel: " + channelName); // Add logging
 
             throw new RuntimeException("Failed to fetch task details for report generation");
         }
