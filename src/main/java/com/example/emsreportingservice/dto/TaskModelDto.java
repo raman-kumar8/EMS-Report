@@ -11,21 +11,21 @@ import java.util.UUID;
 public class TaskModelDto {
     private String taskName;
     private UUID id;
-    private UUID user_id;
+    private UUID userID;
     private String title;
     private String description;
-    private LocalTime start_time;
-    private LocalTime end_time;
+    private LocalTime startTime;
+    private LocalTime endTime;
     private LocalTime duration;
     private String taskStatus;
     private String priority;
-    private ZonedDateTime created_at;
-    private ZonedDateTime updated_at;
+    private ZonedDateTime createdAt;
+    private ZonedDateTime updatedAt;
     private Tag tag;
 
     @Data
     public static class Tag {
         private int id;
-        private String tag;
+        private String tagName;
     }
 }

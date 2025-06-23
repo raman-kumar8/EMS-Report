@@ -1,7 +1,7 @@
 package com.example.emsreportingservice.service;
 
 import com.example.emsreportingservice.dto.TaskModelDto;
-import com.fasterxml.jackson.databind.ObjectMapper;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.*;
@@ -10,7 +10,7 @@ import software.amazon.awssdk.services.lambda.LambdaClient;
 import software.amazon.awssdk.services.lambda.model.InvokeRequest;
 import software.amazon.awssdk.services.lambda.model.InvokeResponse;
 
-import java.nio.charset.StandardCharsets;
+
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;

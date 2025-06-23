@@ -44,7 +44,7 @@ class KafkaProducerServiceTest {
         requestDto.setTaskIds(Collections.singletonList(taskId));
 
         CompletableFuture<SendResult<String, ReportGenerateRequestDto>> future = new CompletableFuture<>();
-        when(kafkaTemplate.send(eq("test-topic"), eq(taskId.toString()), eq(requestDto))).thenReturn(future);
+        when(kafkaTemplate.send(eq("test-topic"), taskId.toString(), eq(requestDto))).thenReturn(future);
 
         // Act
         kafkaProducerService.sendReportRequest(requestDto);

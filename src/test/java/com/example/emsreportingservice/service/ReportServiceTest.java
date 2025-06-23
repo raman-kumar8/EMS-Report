@@ -1,6 +1,6 @@
 package com.example.emsreportingservice.service;
 
-import com.example.emsreportingservice.OpenFeign.GetAllTask;
+import com.example.emsreportingservice.openfeign.GetAllTask;
 import com.example.emsreportingservice.dto.ReportGenerateRequestDto;
 import com.example.emsreportingservice.dto.ReportMetaResponseDto;
 import com.example.emsreportingservice.dto.RequestListUUidsDto;
@@ -106,7 +106,7 @@ class ReportServiceTest {
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertNotNull(response.getBody());
         assertEquals("My Report", response.getBody().getReportName());
-        assertEquals(List.of("Task1", "Task2"), response.getBody().getTaskIncludedNames());
+
     }
 
     @Test

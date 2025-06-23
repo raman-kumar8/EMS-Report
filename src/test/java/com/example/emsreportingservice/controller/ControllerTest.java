@@ -20,12 +20,12 @@ import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 
-import static org.mockito.ArgumentMatchers.any;
+
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @WebMvcTest(Controller.class)
-public class ControllerTest {
+ class ControllerTest {
 
     @Autowired
     private MockMvc mockMvc;

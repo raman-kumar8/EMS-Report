@@ -1,16 +1,15 @@
 package com.example.emsreportingservice.service;
 
-import com.example.emsreportingservice.OpenFeign.GetAllTask;
+import com.example.emsreportingservice.openfeign.GetAllTask;
 import com.example.emsreportingservice.dto.ReportGenerateRequestDto;
 import com.example.emsreportingservice.dto.ReportMetaResponseDto;
 import com.example.emsreportingservice.dto.RequestListUUidsDto;
 import com.example.emsreportingservice.dto.TaskModelDto;
 import com.example.emsreportingservice.enums.Status;
+import com.example.emsreportingservice.exception.CustomException;
 import com.example.emsreportingservice.model.Report;
 import com.example.emsreportingservice.model.ReportTaskModel;
 import com.example.emsreportingservice.repository.ReportRepository;
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.pusher.rest.Pusher;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
@@ -19,35 +18,39 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalTime;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 @Service
 
 public class ReportService {
 
-    private ReportRepository reportRepository;
+    private final ReportRepository reportRepository;
+
+    private final LambdaInvokerService lambdaInvokerService;
+    private final ReportTaskService reportTaskService;
+
+    private final Pusher pusher;
+    private final GetAllTask getAllTask;
+
     @Autowired
-    public ReportService(ReportRepository reportRepository) {
+    public ReportService(
+            ReportRepository reportRepository,
+
+            LambdaInvokerService lambdaInvokerService,
+            ReportTaskService reportTaskService,
+
+            Pusher pusher,
+            GetAllTask getAllTask
+    ) {
         this.reportRepository = reportRepository;
+
+        this.lambdaInvokerService = lambdaInvokerService;
+        this.reportTaskService = reportTaskService;
+
+        this.pusher = pusher;
+        this.getAllTask = getAllTask;
     }
-
-
-    @Autowired
-    private ObjectMapper objectMapper;
-    @Autowired
-    private LambdaInvokerService lambdaInvokerService;
-    @Autowired
-    private ReportTaskService reportTaskService;
-    @Autowired
-    private NotificationService notificationService;
-    @Autowired
-    private  Pusher pusher;
-    @Autowired
-    GetAllTask getAllTask;
 
     @Transactional
     public void saveReport(ReportGenerateRequestDto reportGenerateRequestDto) {
@@ -56,7 +59,7 @@ public class ReportService {
         report.setReportName(reportGenerateRequestDto.getReportName());
         report.setStatus(Status.PROCESSING);
         report.setUserId(reportGenerateRequestDto.getUserId());
-        report.setCreated_at(reportGenerateRequestDto.getCreationDate());
+        report.setCreatedAt(reportGenerateRequestDto.getCreationDate());
 
         reportRepository.save(report);
     }
@@ -117,7 +120,7 @@ public class ReportService {
             notificationDto.setStatus(report.getStatus());
 
             pusher.trigger(channelName, eventName,String.valueOf(report.getReportId()));
-            System.out.println("Pusher: Sent 'COMPLETED' update to public channel: " + channelName); // Add logging
+
 
         } else {
             // Handle failed fetch of tasks, update report status and notify
@@ -129,9 +132,8 @@ public class ReportService {
             notificationDto.setStatus(report.getStatus());
 
             pusher.trigger(channelName, eventName,String.valueOf(report.getReportId()));
-            System.out.println("Pusher: Sent 'FAILED' update to public channel: " + channelName); // Add logging
 
-            throw new RuntimeException("Failed to fetch task details for report generation");
+            throw new CustomException("Failed to fetch task details for report generation");
         }
     }
 
@@ -156,7 +158,7 @@ public class ReportService {
     @Transactional
     public boolean deleteReportById(UUID reportId) {
         if (!reportRepository.existsById(reportId)) {
-            throw new RuntimeException("Report not found");
+            throw new CustomException("Report not found");
         }
 
         reportTaskService.deleteAll(reportId);

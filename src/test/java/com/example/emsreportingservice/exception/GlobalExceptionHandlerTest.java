@@ -2,17 +2,14 @@ package com.example.emsreportingservice.exception;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import com.example.emsreportingservice.exception.CustomException;
-import com.example.emsreportingservice.exception.ErrorDetails;
-import com.example.emsreportingservice.exception.GlobalExceptionHandler;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
-import java.time.LocalDateTime;
 
-public class GlobalExceptionHandlerTest {
+ class GlobalExceptionHandlerTest {
 
     private GlobalExceptionHandler globalExceptionHandler;
 

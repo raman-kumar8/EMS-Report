@@ -19,12 +19,13 @@ import java.util.UUID;
 @RequestMapping("/report")
 public class Controller {
      private final ReportService reportService;
+    private final  KafkaProducerService kafkaProducerService;
+
      @Autowired
-     public Controller(ReportService reportService) {
+     public Controller(ReportService reportService ,KafkaProducerService kafkaProducerService) {
          this.reportService = reportService;
+         this.kafkaProducerService = kafkaProducerService;
      }
-    @Autowired
-     private  KafkaProducerService kafkaProducerService;
 
 
     @PostMapping("/generate")

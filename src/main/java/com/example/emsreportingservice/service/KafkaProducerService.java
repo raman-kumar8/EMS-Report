@@ -1,6 +1,7 @@
 package com.example.emsreportingservice.service;
 
 import com.example.emsreportingservice.dto.ReportGenerateRequestDto;
+import com.example.emsreportingservice.exception.CustomException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -43,7 +44,7 @@ public class KafkaProducerService {
             });
         } catch (Exception e) {
             log.error("Error preparing report request for sending to Kafka: {}", e.getMessage(), e);
-            throw new RuntimeException("Error preparing report request for sending to Kafka", e);
+            throw new CustomException("Error preparing report request for sending to Kafka");
         }
     }
 }

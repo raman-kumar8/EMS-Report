@@ -1,18 +1,18 @@
 package com.example.emsreportingservice.service;
 
 import com.example.emsreportingservice.dto.TaskModelDto;
-import com.fasterxml.jackson.core.type.TypeReference;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import software.amazon.awssdk.auth.credentials.EnvironmentVariableCredentialsProvider;
+
 import software.amazon.awssdk.core.SdkBytes;
-import software.amazon.awssdk.regions.Region;
+
 import software.amazon.awssdk.services.lambda.LambdaClient;
 import software.amazon.awssdk.services.lambda.model.InvokeRequest;
 import software.amazon.awssdk.services.lambda.model.InvokeResponse;
 
-import java.nio.charset.StandardCharsets;
+
 import java.util.List;
 @Service
 @RequiredArgsConstructor

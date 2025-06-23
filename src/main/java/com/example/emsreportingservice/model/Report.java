@@ -5,12 +5,10 @@ import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.Data;
 import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalTime;
 import java.util.Date;
-import java.util.List;
 import java.util.UUID;
 
 @Entity
@@ -38,11 +36,11 @@ public class Report {
     private Status status;
     @CreationTimestamp
     @Temporal(TemporalType.TIMESTAMP)
-    private Date created_at;
+    private Date createdAt;
 
     @UpdateTimestamp
     @Temporal(TemporalType.TIMESTAMP)
-    private Date updated_at;
+    private Date updatedAt;
 
     @OneToOne(mappedBy = "report", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonManagedReference
