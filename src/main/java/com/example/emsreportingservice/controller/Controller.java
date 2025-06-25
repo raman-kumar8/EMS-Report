@@ -72,5 +72,10 @@ public class Controller {
     public ResponseEntity<List<Report>> getAllReportsByUserId(@PathVariable String userId) {
         return reportService.getAllReportsByUserId(UUID.fromString(userId));
     }
+    @GetMapping("/admin/getAll")
+    @ResponseStatus(HttpStatus.OK)
+    public ResponseEntity<List<Report>> getAllReports() {
+         return new ResponseEntity<>(reportService.getAllReports(), HttpStatus.OK);
+    }
 
 }

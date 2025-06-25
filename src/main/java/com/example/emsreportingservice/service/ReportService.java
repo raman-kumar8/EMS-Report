@@ -32,7 +32,23 @@ public class ReportService {
 
     private final Pusher pusher;
     private final GetAllTask getAllTask;
+    private String generateSummary(List<TaskModelDto> taskList) {
+        StringBuilder sb = new StringBuilder();
+        sb.append("Report includes ").append(taskList.size()).append(" tasks: ");
 
+        for (TaskModelDto task : taskList) {
+            String taskTitle = task.getTitle() != null ? task.getTitle() : "Untitled";
+            sb.append(taskTitle).append(", ");
+            if (sb.length() >= 240) break; // Leave room for ellipsis
+        }
+
+        if (sb.length() > 255) {
+            sb.setLength(252);
+            sb.append("...");
+        }
+
+        return sb.toString().replaceAll(", $", ""); // Clean up trailing comma
+    }
     @Autowired
     public ReportService(
             ReportRepository reportRepository,
@@ -96,7 +112,7 @@ public class ReportService {
             String invok = lambdaInvokerService.invokeLambda(taskList);
 
             report.setS3Url(invok);
-            report.setSummary("Will generate later");
+            report.setSummary(generateSummary(taskList));
             report.setStatus(Status.COMPLETED);
 
             // Update task info
@@ -168,6 +184,9 @@ public class ReportService {
     public ResponseEntity<List<Report>> getAllReportsByUserId(UUID userID){
       return ResponseEntity.ok(reportRepository.findAllByUserId(userID));
 
+    }
+    public List<Report> getAllReports(){
+        return reportRepository.findAll();
     }
 
 

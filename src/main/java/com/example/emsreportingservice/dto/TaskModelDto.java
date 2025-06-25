@@ -1,5 +1,6 @@
 package com.example.emsreportingservice.dto;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 
 import java.time.LocalTime;
@@ -11,7 +12,7 @@ import java.util.UUID;
 public class TaskModelDto {
     private String taskName;
     private UUID id;
-    private UUID userID;
+    private UUID userId;
     private String title;
     private String description;
     private LocalTime startTime;
@@ -22,10 +23,12 @@ public class TaskModelDto {
     private ZonedDateTime createdAt;
     private ZonedDateTime updatedAt;
     private Tag tag;
+    private String assignedBy;
 
     @Data
     public static class Tag {
         private int id;
+        @JsonProperty("tag")
         private String tagName;
     }
 }
